@@ -6,6 +6,7 @@ import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.reactive.TransactionalOperator;
 
 import java.time.Duration;
 
@@ -39,4 +40,18 @@ public class PostgreSQLConnectionPool {
 
 		return new ConnectionPool(poolConfiguration);
 	}
+
+        //crear factory de conexion con bean que active r2dbcEntityTemplate
+        //bean para activar ReactiveTransactionalManager
+        //bean pata TransactionalOperation
+        //importar en el reactiveRepositoryAdapter
+        //con 
+        //public Mono<Usuario> save(Usuario usuario) {
+//         return Mono.just(usuario)
+//                 .map(u -> mapper.mapBuilder(u, UsuarioEntity.UsuarioEntityBuilder.class).build())
+//                 .flatMap(u -> repository.save(u))
+//                 .map(entity -> mapper.mapBuilder(entity, Usuario.UsuarioBuilder.class).build())
+//                 .as(txOperator::transactional);
+//     }**
+// private final TransactionalOperator txOperator;
 }

@@ -2,35 +2,36 @@ package co.com.bancolombia.api.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Schema
 public record CreateUserRecord(
-    @NotBlank(message = "El documento de identidad no puede estar vacío")
-    String documentId,
+        @NotBlank(message = "Document ID cannot be empty")
+        String documentId,
 
-    @NotBlank(message = "El nombre no puede estar vacío")
-    String name,
+        @NotBlank(message = "First name cannot be empty")
+        String name,
 
-    @NotBlank(message = "El apellido no puede estar vacío")
-    String lastname,
+        @NotBlank(message = "Last name cannot be empty")
+        String lastname,
 
-    LocalDate birthDate,
+        LocalDate birthDate,
 
-    String address,
+        String address,
 
-    @NotBlank(message = "El correo electrónico no puede estar vacío")
-    @Email(message = "El correo electrónico no tiene un formato válido")
-    String email,
+        @NotBlank(message = "Email cannot be empty")
+        @Email(message = "Invalid email format")
+        String email,
 
-    String phone,
+        String phone,
 
-    @NotNull(message = "El salario base no puede estar vacío")
-    @DecimalMin(value = "0.0", inclusive = false, message = "El salario debe ser mayor a cero")
-    @DecimalMax(value = "15000001", inclusive = false, message = "El salario debe ser menor o giual a 15000000")
-    BigDecimal baseSalary
+        @NotNull(message = "Base salary cannot be empty")
+        @DecimalMin(value = "0.0", inclusive = false, message = "Salary must be greater than zero")
+        @DecimalMax(value = "15000001", inclusive = false, message = "Salary must be less than or equal to 15000000")
+        BigDecimal baseSalary
 ) {}

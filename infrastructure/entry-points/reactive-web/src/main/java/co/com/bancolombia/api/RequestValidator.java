@@ -19,7 +19,11 @@ public class RequestValidator {
             var errors = new BeanPropertyBindingResult(dto, dto.getClass().getName());
             validator.validate(dto, errors);
             if (errors.hasErrors()) {
-                throw new ValidationException(errors.toString());
+                String detail = errors.getAllErrors().stream()
+                        .map(e -> e.getDefaultMessage())
+                        .reduce((a,b) -> a + "; " + b)
+                        .orElse("Solicitud inválida");
+                throw new ValidationException(detail);
             }
             return dto;
         });
