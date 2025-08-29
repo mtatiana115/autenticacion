@@ -7,7 +7,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
-    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0"
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.11'
     implementation 'io.r2dbc:r2dbc-spi:1.0.0.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 }
