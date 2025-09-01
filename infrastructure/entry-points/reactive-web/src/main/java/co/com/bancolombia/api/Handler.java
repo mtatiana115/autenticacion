@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ public class Handler {
                 .doOnSuccess(saved -> log.info("User successfully saved: {}", saved))
                 .doOnError(err -> log.error("Error while saving user", err))
                 .flatMap(savedUser ->
-                        ServerResponse.ok()
+                        ServerResponse.status(HttpResponseStatus.CREATED.code())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(userDTOMapper.toResponse(savedUser))
                                 .as(transactionalOperator::transactional)
@@ -42,4 +43,12 @@ public class Handler {
                 .log("SaveUserFlow");
     }
 
+    public Mono<ServerResponse> existsUserByEmailUseCase(ServerRequest serverRequest){
+        String email = serverRequest.pathVariable("email");
+        log.info("Checking if a user exists with email: {}", email);
+        return userUseCase.existsUserByEmail(email)
+                .flatMap(exists -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue("{\"existsUser\": " + exists + "}"));
+    }
 }

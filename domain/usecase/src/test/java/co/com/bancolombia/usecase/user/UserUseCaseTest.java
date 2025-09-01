@@ -70,4 +70,55 @@ public class UserUseCaseTest {
         verify(repository).existsByEmail(user.getEmail());
         verify(repository, never()).save(any(User.class));
     }
+
+    @Test
+    void saveUser_WhenExistsByEmailFails_ShouldPropagateError() {
+        when(repository.existsByEmail(any(String.class))).thenReturn(Mono.error(new RuntimeException("DB connection failed")));
+
+        Mono<User> result = useCase.saveUser(user);
+
+        StepVerifier.create(result)
+                .expectError(RuntimeException.class)
+                .verify();
+
+        verify(repository).existsByEmail(user.getEmail());
+        verify(repository, never()).save(any(User.class));
+    }
+
+    @Test
+    void saveUser_WhenSaveFails_ShouldPropagateError() {
+        when(repository.existsByEmail(any(String.class))).thenReturn(Mono.just(false));
+        when(repository.save(any(User.class))).thenReturn(Mono.error(new RuntimeException("Failed to save to database")));
+
+        Mono<User> result = useCase.saveUser(user);
+
+        StepVerifier.create(result)
+                .expectError(RuntimeException.class)
+                .verify();
+
+        verify(repository).existsByEmail(user.getEmail());
+        verify(repository).save(user);
+    }
+
+    @Test
+    void existsUserByEmail_WhenEmailExists_ShouldReturnTrue() {
+        when(repository.existsByEmail(anyString())).thenReturn(Mono.just(true));
+
+        Mono<Boolean> result = useCase.existsUserByEmail("existing@test.com");
+
+        StepVerifier.create(result)
+                .expectNext(true)
+                .verifyComplete();
+    }
+
+    @Test
+    void existsUserByEmail_WhenEmailDoesNotExist_ShouldReturnFalse() {
+        when(repository.existsByEmail(anyString())).thenReturn(Mono.just(false));
+
+        Mono<Boolean> result = useCase.existsUserByEmail("non-existing@test.com");
+
+        StepVerifier.create(result)
+                .expectNext(false)
+                .verifyComplete();
+    }
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -48,6 +47,8 @@ public class RouterRest {
             )
     })
     public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-        return route(POST("/api/v1/users"), handler::saveUseCase);
+        return route()
+                .POST("/api/v1/users",handler::saveUseCase)
+                .GET("/api/v1/users/email/{email}/exists",handler::existsUserByEmailUseCase).build();
     }
 }
