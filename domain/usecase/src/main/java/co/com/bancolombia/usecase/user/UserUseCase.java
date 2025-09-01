@@ -18,4 +18,8 @@ public class UserUseCase  {
                         : Mono.just(user))
                 .flatMap(userRepository::save);
     }
+
+    public Mono<Boolean> existsUserByEmail(String email){
+        return userRepository.existsByEmail(email);
+    }
 }

@@ -22,7 +22,7 @@ public class RequestValidator {
                 String detail = errors.getAllErrors().stream()
                         .map(e -> e.getDefaultMessage())
                         .reduce((a,b) -> a + "; " + b)
-                        .orElse("Solicitud inválida");
+                        .orElse("application submitted");
                 throw new ValidationException(detail);
             }
             return dto;
