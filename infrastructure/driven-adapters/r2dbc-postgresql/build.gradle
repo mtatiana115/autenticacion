@@ -8,8 +8,9 @@ dependencies {
 
     testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 
-    // implementation "org.mapstruct:mapstruct:$mapstructVersion"
-    // annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+    implementation "org.mapstruct:mapstruct:$mapstructVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
     implementation 'org.springframework:spring-tx'
+
 }
 

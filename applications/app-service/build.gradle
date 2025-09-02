@@ -1,6 +1,8 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':auth')
+	implementation project(':jwt-adapter')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':r2dbc-postgresql')
 	implementation project(':reactive-web')

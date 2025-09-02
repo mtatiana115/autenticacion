@@ -1,14 +1,13 @@
-package co.com.bancolombia.api;
+package co.com.bancolombia.api.handler;
 
+import co.com.bancolombia.api.RequestValidator;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.reactive.TransactionalOperator;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import co.com.bancolombia.api.dto.request.CreateUserRecord;
@@ -19,7 +18,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class UserHandler {
     private final RequestValidator requestValidator;
     private final UserUseCase userUseCase;
     private final UserDTOMapper userDTOMapper;

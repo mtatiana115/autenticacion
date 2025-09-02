@@ -2,6 +2,8 @@ package co.com.bancolombia.api;
 
 import co.com.bancolombia.api.dto.request.CreateUserRecord;
 import co.com.bancolombia.api.dto.response.UserRecordResponse;
+import co.com.bancolombia.api.handler.AuthHandler;
+import co.com.bancolombia.api.handler.UserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +26,7 @@ public class RouterRest {
             @RouterOperation(
                     path = "/api/v1/users",
                     method = RequestMethod.POST,
-                    beanClass = Handler.class,
+                    beanClass = UserHandler.class,
                     beanMethod = "saveUseCase",
                     operation = @Operation(
                             operationId = "createUser",
@@ -46,9 +48,15 @@ public class RouterRest {
                     )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(Handler handler) {
+    public RouterFunction<ServerResponse> routerFunction(UserHandler userHandler) {
         return route()
-                .POST("/api/v1/users",handler::saveUseCase)
-                .GET("/api/v1/users/email/{email}/exists",handler::existsUserByEmailUseCase).build();
+                .POST("/api/v1/users", userHandler::saveUseCase)
+                .GET("/api/v1/users/email/{email}/exists", userHandler::existsUserByEmailUseCase).build();
+
+    }
+
+    public RouterFunction<ServerResponse> routerAuthFunction (AuthHandler authHandler){
+        return route()
+                .POST("/api/v1/login", authHandler::listenSignIn).build();
     }
 }

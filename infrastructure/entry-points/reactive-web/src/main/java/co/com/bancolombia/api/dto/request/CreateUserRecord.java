@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -33,5 +34,11 @@ public record CreateUserRecord(
         @NotNull(message = "Base salary cannot be empty")
         @DecimalMin(value = "0.0", inclusive = false, message = "Salary must be greater than zero")
         @DecimalMax(value = "15000001", inclusive = false, message = "Salary must be less than or equal to 15000000")
-        BigDecimal baseSalary
+        BigDecimal baseSalary,
+
+        @NotNull
+        @Min(0)
+        Integer rolId,
+        @NotBlank
+        String password
 ) {}

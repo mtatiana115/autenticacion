@@ -21,8 +21,7 @@ import lombok.Setter;
 @Builder
 public class UserEntity {
     @Id
-    @Column("user_id")
-    private String userId;
+    private String id;
     @Column("document_id")
     private String documentId;
     private String name;
@@ -34,6 +33,7 @@ public class UserEntity {
     private String phone;
     @Column("base_salary")
     private BigDecimal baseSalary;
-    // @Column("rol_id")
-    // private String rolId;
+    @Column("role_id")
+    private Integer rolId;
+    private String password;
 }

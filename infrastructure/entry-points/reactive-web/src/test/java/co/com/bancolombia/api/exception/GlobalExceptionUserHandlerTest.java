@@ -16,7 +16,7 @@ import java.net.ConnectException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class GlobalExceptionHandlerTest {
+class GlobalExceptionUserHandlerTest {
 
     private GlobalExceptionHandler handler;
 
