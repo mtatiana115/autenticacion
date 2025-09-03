@@ -26,16 +26,6 @@ public class JwtProvider implements IAuthProvider {
     @Value("${jwt.expiration}")
     private Integer expiration;
 
-    public String generateToken(UserDetails userDetails) {
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities())
-                .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + expiration))
-                .signWith(getKey(secret))
-                .compact();
-    }
-
     public Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getKey(secret))
@@ -83,7 +73,15 @@ public class JwtProvider implements IAuthProvider {
 
     @Override
     public Mono<Auth> generateToken(User user) {
-        return null;
+        String token = Jwts.builder()
+                .subject(user.getEmail())
+                .claim("role", user.getRol().getName())
+                .claim("documentId", user.getDocumentId())
+                .issuedAt(new Date())
+                .expiration(new Date(new Date().getTime() + (expiration * 1000L)))
+                .signWith(getKey(secret))
+                .compact();
+        return Mono.just(new Auth(token));
     }
 
     @Override

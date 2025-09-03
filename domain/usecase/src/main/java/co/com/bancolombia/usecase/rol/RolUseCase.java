@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 public class RolUseCase {
     private final RolRepository rolRepository;
 
-    Mono<Rol> getById (Integer id){
+    public Mono<Rol> getById (Integer id){
         return rolRepository.findById(id);
     }
 }

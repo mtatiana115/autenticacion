@@ -33,5 +33,5 @@ adapters:
    password: "postgres"
    database: "autenticacion"
 jwt:
-  secret: "secreto"
+  secret: "YTAyMzA3ZjctODc4Ny00M2YzLWJkN2UtNTMwY2YzYzZjZWE3"
   expiration: 3600

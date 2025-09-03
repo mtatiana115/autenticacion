@@ -23,6 +23,7 @@ public interface UserMapper {
     @Named("rolFromId")
     default Rol rolFromId(Integer rolId) {
         if (rolId == null) {
+            System.out.println("ENTRE AQUI**********************");
             return null;
         }
         return Rol.builder().id(rolId).build();

@@ -1,6 +1,7 @@
 package co.com.bancolombia.api;
 
 import co.com.bancolombia.api.dto.request.CreateUserRecord;
+import co.com.bancolombia.api.dto.request.SignInDTO;
 import co.com.bancolombia.api.dto.response.UserRecordResponse;
 import co.com.bancolombia.api.handler.AuthHandler;
 import co.com.bancolombia.api.handler.UserHandler;
@@ -54,6 +55,38 @@ public class RouterRest {
                 .GET("/api/v1/users/email/{email}/exists", userHandler::existsUserByEmailUseCase).build();
 
     }
+    @Bean
+    @RouterOperation(
+            path = "/api/v1/login",
+            method = RequestMethod.POST,
+            beanClass = AuthHandler.class,
+            beanMethod = "listenSignIn",
+            operation = @Operation(
+                    operationId = "login",
+                    summary = "User login",
+                    description = "Authenticates a user and returns an authentication token",
+                    requestBody = @RequestBody(
+                            required = true,
+                            description = "The user's credentials (email and password)",
+                            content = @Content(schema = @Schema(implementation = SignInDTO.class))
+                    ),
+                    responses = {
+                            @ApiResponse(
+                                    responseCode = "200",
+                                    description = "Login successful",
+                                    content = @Content(schema = @Schema(implementation = SignInDTO.class))
+                            ),
+                            @ApiResponse(
+                                    responseCode = "401",
+                                    description = "Unauthorized - Invalid credentials"
+                            ),
+                            @ApiResponse(
+                                    responseCode = "400",
+                                    description = "Bad Request - Missing or invalid fields"
+                            )
+                    }
+            )
+    )
 
     public RouterFunction<ServerResponse> routerAuthFunction (AuthHandler authHandler){
         return route()

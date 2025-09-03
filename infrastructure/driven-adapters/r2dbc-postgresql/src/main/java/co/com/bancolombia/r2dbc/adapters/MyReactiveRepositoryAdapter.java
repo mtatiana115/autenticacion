@@ -7,12 +7,14 @@ import co.com.bancolombia.r2dbc.repositories.MyReactiveRepository;
 import co.com.bancolombia.r2dbc.entities.UserEntity;
 import co.com.bancolombia.r2dbc.helper.ReactiveAdapterOperations;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class MyReactiveRepositoryAdapter implements UserRepository{
@@ -28,7 +30,9 @@ public class MyReactiveRepositoryAdapter implements UserRepository{
     @Override
     public Mono<User> findByEmail(String email) {
         return repository.findByEmail(email)
-                .switchIfEmpty(Mono.empty());
+                .switchIfEmpty(Mono.empty())
+                .map(mapper::toModel)
+                .doOnNext(user -> log.info("USUARIODB *********************{}",user));
     }
 
     @Override
