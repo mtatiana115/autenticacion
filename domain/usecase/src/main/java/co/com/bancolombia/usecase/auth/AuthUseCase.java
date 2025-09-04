@@ -4,29 +4,31 @@ import co.com.bancolombia.model.auth.Auth;
 import co.com.bancolombia.model.auth.gateways.IAuthProvider;
 import co.com.bancolombia.model.auth.gateways.IPasswordEncoder;
 import co.com.bancolombia.model.rol.Rol;
+import co.com.bancolombia.model.user.User;
 import co.com.bancolombia.model.user.gateways.UserRepository;
 
 import co.com.bancolombia.usecase.rol.RolUseCase;
+import co.com.bancolombia.usecase.user.UserUseCase;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
 public class AuthUseCase {
 
-    private final UserRepository userRepository;
+    private final UserUseCase userUseCase;
     private  final IAuthProvider authProvider;
     private final RolUseCase rolUseCase;
     private final IPasswordEncoder passwordEncoder;
 
-    public AuthUseCase(UserRepository userRepository, IAuthProvider authProvider, RolUseCase rolUseCase, IPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public AuthUseCase(UserUseCase userUseCase, IAuthProvider authProvider, RolUseCase rolUseCase, IPasswordEncoder passwordEncoder) {
+        this.userUseCase = userUseCase;
         this.authProvider = authProvider;
         this.rolUseCase = rolUseCase;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Mono<Auth> signIn (String email, String password){
-        return userRepository.findByEmail(email)
+        return userUseCase.findByEmail(email)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("credenciales invalidas")))
                 .flatMap(user -> rolUseCase.getById(user.getRol().getId())
                         .flatMap(rol -> {
@@ -42,6 +44,23 @@ public class AuthUseCase {
                                     }
                                     return authProvider.generateToken(user);
                                 })
-                        );
+                );
     }
+
+    public Mono<User> validateToken (String token){
+        return authProvider.validateToken(token)
+                .flatMap(isValid -> {
+                    return  authProvider.getSubject(token)
+                            .flatMap(userUseCase::findByEmail)
+                            .flatMap(user -> rolUseCase
+                                    .getById(user.getRol().getId())
+                                    .flatMap(rol -> {
+                                        user.setRol(rol);
+                                        return Mono.just(user);
+                                    })
+                            );
+                });
+    }
+
+
 }

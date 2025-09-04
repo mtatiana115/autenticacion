@@ -25,12 +25,14 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(
-                                "/v3/api-docs/",
+                                "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/",
                                 "/webjars/swagger-ui/**",
-                                "/api/v1/login"
-
+                                "/api/v1/login",
+                                "/api/v1/token",
+                                "/v3/api-docs/swagger-config",
+                                "/api/v1/users/email/*/exists"
                         ).permitAll()
                         .pathMatchers(
                                 "/api/v1/users"

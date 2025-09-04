@@ -5,8 +5,10 @@ import co.com.bancolombia.model.auth.gateways.IAuthProvider;
 import co.com.bancolombia.model.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.lang.Objects;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,10 +18,11 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.logging.Logger;
 
+@Slf4j
 @Component
 public class JwtProvider implements IAuthProvider {
 
-    private static final Logger LOGGER =  Logger.getLogger(JwtProvider.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JwtProvider.class.getName());
 
     @Value("${jwt.secret}")
     private String secret;
@@ -34,13 +37,14 @@ public class JwtProvider implements IAuthProvider {
                 .getPayload();
     }
 
-    public String getSubject(String token) {
-        return Jwts.parser()
+    @Override
+    public Mono<String> getSubject(String token) {
+        return Mono.just(Jwts.parser()
                 .verifyWith(getKey(secret))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .getSubject();
+                .getSubject());
     }
 
     public boolean validate(String token){
@@ -85,7 +89,18 @@ public class JwtProvider implements IAuthProvider {
     }
 
     @Override
-    public Mono<Boolean> validateToken(Auth token) {
-        return null;
+    public Mono<Boolean> validateToken(String token) {
+        return Mono.fromSupplier(() -> {
+                    String subject = Jwts.parser()
+                            .verifyWith(getKey(secret))
+                            .build()
+                            .parseSignedClaims(token)
+                            .getPayload()
+                            .getSubject();
+                    return !Objects.isEmpty(subject);
+                })
+                .onErrorResume(exception -> Mono.error(new IllegalArgumentException("Invalid token")));
     }
+
+
 }

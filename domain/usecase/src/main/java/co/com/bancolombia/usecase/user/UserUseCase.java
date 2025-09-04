@@ -31,4 +31,8 @@ public class UserUseCase  {
     public Mono<Boolean> existsUserByEmail(String email){
         return userRepository.existsByEmail(email);
     }
+
+    public Mono<User> findByEmail (String email){
+        return userRepository.findByEmail(email);
+    }
 }

@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 public interface IAuthProvider {
     Mono<Auth> generateToken(User user);
 
-    Mono<Boolean> validateToken(Auth token);
+    Mono<Boolean> validateToken(String token);
 
+    Mono<String> getSubject(String token);
 }

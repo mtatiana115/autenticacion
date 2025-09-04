@@ -1,6 +1,9 @@
 package co.com.bancolombia.api.exception;
 
 import co.com.bancolombia.model.user.exception.EmailAlreadyExistsException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.r2dbc.spi.R2dbcException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.net.ConnectException;
+import java.security.SignatureException;
 
 @Slf4j
 @ControllerAdvice
@@ -106,5 +110,19 @@ public class GlobalExceptionHandler {
         problem.setDetail("An unexpected error occurred");
         log.info("Returning 500 Internal Server Error for generic exception");
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem));
+    }
+
+    @ExceptionHandler({
+            ExpiredJwtException.class,
+            UnsupportedJwtException.class,
+            MalformedJwtException.class,
+            SignatureException.class
+    })
+    public Mono<ResponseEntity<ProblemDetail>> handleJwtExceptions(Exception ex) {
+        log.warn("JWT validation error -> {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problem.setTitle("Unauthorized");
+        problem.setDetail("Invalid or expired JWT token");
+        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem));
     }
 }
