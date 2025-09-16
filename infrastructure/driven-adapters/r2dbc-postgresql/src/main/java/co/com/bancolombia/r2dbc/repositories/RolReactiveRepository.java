@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 
 public interface RolReactiveRepository extends ReactiveCrudRepository<RolEntity, Integer>, ReactiveQueryByExampleExecutor<RolEntity> {
     Mono<RolEntity> findById(Integer id);
+
 }

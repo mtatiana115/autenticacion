@@ -23,15 +23,24 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.just(authentication)
-                .map(auth -> jwtProvider.getClaims(auth.getCredentials().toString()))
+                .flatMap(auth -> {
+                    Object credentials = auth.getCredentials();
+                    if (credentials == null) {
+                        return Mono.error(new Exception("Invalid authentication credentials: token is missing"));
+                    }
+                    String token = credentials.toString();
+                    return Mono.just(token);
+                })
                 .log()
-                .onErrorResume(e -> Mono.error(new Throwable("bad token")))
-                .map(claims -> {
+                .onErrorResume(e -> Mono.error(new Throwable("bad token", e)))
+                .map(token -> {
+                    Map<String, Object> claims = jwtProvider.getClaims(token);
                     String role = (String) claims.get("role");
+                    String subject = (String) claims.get("sub");
                     return new UsernamePasswordAuthenticationToken(
-                            claims.getSubject(),
+                            subject,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))// Create a list with the single authority
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
                     );
                 });
     }

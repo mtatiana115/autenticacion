@@ -2,6 +2,7 @@ package co.com.bancolombia.api.handler;
 
 import co.com.bancolombia.api.dto.request.SignInDTO;
 import co.com.bancolombia.api.dto.request.ValidateTokenDTO;
+import co.com.bancolombia.api.dto.response.AuthResponseDTO;
 import co.com.bancolombia.api.dto.response.ValidationTokenResponseDTO;
 import co.com.bancolombia.api.mapper.ValidationTokenMapper;
 import co.com.bancolombia.model.auth.Auth;
@@ -24,13 +25,24 @@ public class AuthHandler {
     private final AuthUseCase authUseCase;
     private final ValidationTokenMapper validationTokenMapper;
 
-    public Mono<ServerResponse> listenSignIn (ServerRequest serverRequest){
+//    public Mono<ServerResponse> listenSignIn (ServerRequest serverRequest){
+//        return serverRequest.bodyToMono(SignInDTO.class)
+//                .flatMap(credentials -> authUseCase.signIn(credentials.email(), credentials.password())
+//                        .flatMap(auth ->
+//                                ServerResponse.ok()
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .body(Mono.just(auth), Auth.class)));
+//    }
+
+    public Mono<ServerResponse> listenSignIn(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(SignInDTO.class)
-                .flatMap(credentials -> authUseCase.signIn(credentials.email(), credentials.password())
-                        .flatMap(auth ->
-                                ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(Mono.just(auth), Auth.class)));
+                .flatMap(credentials -> authUseCase.signIn(credentials.email(), credentials.password()))
+                .map(auth -> new AuthResponseDTO(auth.getToken()))
+                .flatMap(response ->
+                        ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(response)
+                );
     }
 
     public  Mono<ServerResponse> validateToken (ServerRequest serverRequest){

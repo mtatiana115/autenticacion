@@ -81,6 +81,7 @@ public class JwtProvider implements IAuthProvider {
                 .subject(user.getEmail())
                 .claim("role", user.getRol().getName())
                 .claim("documentId", user.getDocumentId())
+                .claim("name", user.getName())
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + (expiration * 1000L)))
                 .signWith(getKey(secret))

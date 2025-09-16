@@ -3,7 +3,7 @@ package co.com.bancolombia.r2dbc;
 import co.com.bancolombia.model.user.User;
 import co.com.bancolombia.r2dbc.adapters.MyReactiveRepositoryAdapter;
 import co.com.bancolombia.r2dbc.entities.UserEntity;
-import co.com.bancolombia.r2dbc.repositories.MyReactiveRepository;
+import co.com.bancolombia.r2dbc.repositories.UserReactiveRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,14 +17,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MyReactiveRepositoryAdapterTest {
+class UserReactiveRepositoryAdapterTest {
     // TODO: change four you own tests
 
     @InjectMocks
     MyReactiveRepositoryAdapter repositoryAdapter;
 
     @Mock
-    MyReactiveRepository repository;
+    UserReactiveRepository repository;
 
     @Mock
     ObjectMapper mapper;
