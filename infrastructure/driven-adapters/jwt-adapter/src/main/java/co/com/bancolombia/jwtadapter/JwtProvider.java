@@ -1,0 +1,106 @@
+package co.com.bancolombia.jwtadapter;
+
+import co.com.bancolombia.model.auth.Auth;
+import co.com.bancolombia.model.auth.gateways.IAuthProvider;
+import co.com.bancolombia.model.user.User;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.lang.Objects;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.logging.Logger;
+
+@Slf4j
+@Component
+public class JwtProvider implements IAuthProvider {
+
+    private static final Logger LOGGER = Logger.getLogger(JwtProvider.class.getName());
+
+    @Value("${jwt.secret}")
+    private String secret;
+    @Value("${jwt.expiration}")
+    private Integer expiration;
+
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey(secret))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    @Override
+    public Mono<String> getSubject(String token) {
+        return Mono.just(Jwts.parser()
+                .verifyWith(getKey(secret))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject());
+    }
+
+    public boolean validate(String token){
+        try {
+            Jwts.parser()
+                    .verifyWith(getKey(secret))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+            return true;
+        } catch (ExpiredJwtException e) {
+            LOGGER.severe("token expired");
+        } catch (UnsupportedJwtException e) {
+            LOGGER.severe("token unsupported");
+        } catch (MalformedJwtException e) {
+            LOGGER.severe("token malformed");
+        } catch (SignatureException e) {
+            LOGGER.severe("bad signature");
+        } catch (IllegalArgumentException e) {
+            LOGGER.severe("illegal args");
+        }
+        return false;
+    }
+
+    private SecretKey getKey(String secret) {
+        byte[] secretBytes = Decoders.BASE64URL.decode(secret);
+        return Keys.hmacShaKeyFor(secretBytes);
+    }
+
+    @Override
+    public Mono<Auth> generateToken(User user) {
+        String token = Jwts.builder()
+                .subject(user.getEmail())
+                .claim("role", user.getRol().getName())
+                .claim("documentId", user.getDocumentId())
+                .issuedAt(new Date())
+                .expiration(new Date(new Date().getTime() + (expiration * 1000L)))
+                .signWith(getKey(secret))
+                .compact();
+        return Mono.just(new Auth(token));
+    }
+
+    @Override
+    public Mono<Boolean> validateToken(String token) {
+        return Mono.fromSupplier(() -> {
+                    String subject = Jwts.parser()
+                            .verifyWith(getKey(secret))
+                            .build()
+                            .parseSignedClaims(token)
+                            .getPayload()
+                            .getSubject();
+                    return !Objects.isEmpty(subject);
+                })
+                .onErrorResume(exception -> Mono.error(new IllegalArgumentException("Invalid token")));
+    }
+
+
+}

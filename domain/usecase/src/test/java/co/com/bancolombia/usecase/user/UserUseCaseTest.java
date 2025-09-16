@@ -27,7 +27,7 @@ public class UserUseCaseTest {
     private UserUseCase useCase;
 
     private final User user = User.builder()
-            .userId("1")
+            .id("1")
             .documentId("123456789")
             .name("Tatiana")
             .lastname("Maldonado")

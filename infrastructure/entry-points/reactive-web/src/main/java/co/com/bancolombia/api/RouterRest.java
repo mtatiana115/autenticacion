@@ -1,7 +1,11 @@
 package co.com.bancolombia.api;
 
 import co.com.bancolombia.api.dto.request.CreateUserRecord;
+import co.com.bancolombia.api.dto.request.SignInDTO;
+import co.com.bancolombia.api.dto.request.ValidateTokenDTO;
 import co.com.bancolombia.api.dto.response.UserRecordResponse;
+import co.com.bancolombia.api.handler.AuthHandler;
+import co.com.bancolombia.api.handler.UserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +28,7 @@ public class RouterRest {
             @RouterOperation(
                     path = "/api/v1/users",
                     method = RequestMethod.POST,
-                    beanClass = Handler.class,
+                    beanClass = UserHandler.class,
                     beanMethod = "saveUseCase",
                     operation = @Operation(
                             operationId = "createUser",
@@ -46,9 +50,82 @@ public class RouterRest {
                     )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(Handler handler) {
+    public RouterFunction<ServerResponse> routerFunction(UserHandler userHandler) {
         return route()
-                .POST("/api/v1/users",handler::saveUseCase)
-                .GET("/api/v1/users/email/{email}/exists",handler::existsUserByEmailUseCase).build();
+                .POST("/api/v1/users", userHandler::saveUseCase)
+                .GET("/api/v1/users/email/{email}/exists", userHandler::existsUserByEmailUseCase).build();
+
+    }
+
+    @RouterOperations({@RouterOperation(
+            path = "/api/v1/login",
+            method = RequestMethod.POST,
+            beanClass = AuthHandler.class,
+            beanMethod = "listenSignIn",
+            operation = @Operation(
+                    operationId = "login",
+                    summary = "User login",
+                    description = "Authenticates a user and returns an authentication token",
+                    requestBody = @RequestBody(
+                            required = true,
+                            description = "The user's credentials (email and password)",
+                            content = @Content(schema = @Schema(implementation = SignInDTO.class))
+                    ),
+                    responses = {
+                            @ApiResponse(
+                                    responseCode = "200",
+                                    description = "Login successful",
+                                    content = @Content(schema = @Schema(implementation = SignInDTO.class))
+                            ),
+                            @ApiResponse(
+                                    responseCode = "401",
+                                    description = "Unauthorized - Invalid credentials"
+                            ),
+                            @ApiResponse(
+                                    responseCode = "400",
+                                    description = "Bad Request - Missing or invalid fields"
+                            )
+                    }
+            )
+    ),
+            @RouterOperation(
+                    path = "/api/v1/token",
+                    method = RequestMethod.POST,
+                    beanClass = AuthHandler.class,
+                    beanMethod = "validateToken",
+                    operation = @Operation(
+                            operationId = "isValid",
+                            summary = "String token",
+                            description = "Validate an authentication token",
+                            requestBody = @RequestBody(
+                                    required = true,
+                                    description = "token",
+                                    content = @Content(schema = @Schema(implementation = ValidateTokenDTO.class))
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "is valid successful",
+                                            content = @Content(schema = @Schema(implementation = SignInDTO.class))
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "401",
+                                            description = "Unauthorized - Invalid token"
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "400",
+                                            description = "Bad Request - Missing or invalid fields"
+                                    )
+                            }
+                    )
+            )})
+    @Bean
+
+    public RouterFunction<ServerResponse> routerAuthFunction (AuthHandler authHandler){
+        return route()
+                .POST("/api/v1/login", authHandler::listenSignIn)
+                .POST("/api/v1/token", authHandler::validateToken)
+                .build();
+
     }
 }

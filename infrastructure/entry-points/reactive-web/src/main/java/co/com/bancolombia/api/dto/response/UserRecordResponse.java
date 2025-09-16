@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record UserRecordResponse(
-    String userId,
+    String id,
     String documentId,
     String name,
     String lastname,
