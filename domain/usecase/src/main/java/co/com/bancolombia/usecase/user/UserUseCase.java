@@ -20,10 +20,19 @@ public class UserUseCase  {
                         : Mono.just(user))
                 .flatMap(userModel ->
                         passwordEncoder.encode(userModel.getPassword())
-                        .flatMap(hash -> {
-                            userModel.setPassword(hash);
-                        return Mono.just(userModel);
-                        })
+                                .flatMap(hash -> {
+                                    userModel.setPassword(hash);
+
+                                    // DEBUG: Verificar el rol antes de guardar
+                                    System.out.println("DEBUG - User antes de guardar:");
+                                    System.out.println("- Rol: " + userModel.getRol());
+                                    if (userModel.getRol() != null) {
+                                        System.out.println("- Rol ID: " + userModel.getRol().getId());
+                                        System.out.println("- Rol Name: " + userModel.getRol().getName());
+                                    }
+
+                                    return Mono.just(userModel);
+                                })
                 )
                 .flatMap(userRepository::save);
     }

@@ -27,11 +27,11 @@ springdoc:
     path: /swagger-ui.html
 adapters:
   r2dbc:
-    host: ${DB_HOST}
-    port: ${DB_PORT}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    database: ${DB_NAME}
+   host: "localhost"
+   port: 5432
+   username: "postgres"
+   password: "postgres"
+   database: "autenticacion"
 jwt:
-  secret: ${SECRET_KEY}
+  secret: "YTAyMzA3ZjctODc4Ny00M2YzLWJkN2UtNTMwY2YzYzZjZWE3"
   expiration: 3600

@@ -19,15 +19,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtFilter jwtFilter) {
-
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
-                                "/swagger-ui/",
+                                "/swagger-ui/**",
                                 "/webjars/swagger-ui/**",
                                 "/api/v1/login",
                                 "/api/v1/token",
@@ -39,7 +38,6 @@ public class SecurityConfig {
                         ).hasAnyRole("ADMIN","ADVISOR")
                         .anyExchange().authenticated()
                 )
-                .addFilterAfter(jwtFilter, SecurityWebFiltersOrder.FIRST)
                 .securityContextRepository(securityContextRepository)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
