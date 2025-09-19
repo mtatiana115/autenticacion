@@ -32,6 +32,7 @@ adapters:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     database: ${DB_NAME}
-jwt:
-  secret: ${SECRET_KEY}
-  expiration: 3600
+security:
+  jwt:
+    secret: ${SECRET_KEY}
+    expiration: 3600
