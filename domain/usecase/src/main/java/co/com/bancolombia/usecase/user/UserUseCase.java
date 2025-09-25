@@ -7,6 +7,8 @@ import co.com.bancolombia.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class UserUseCase  {
 
@@ -43,5 +45,11 @@ public class UserUseCase  {
 
     public Mono<User> findByEmail (String email){
         return userRepository.findByEmail(email);
+    }
+
+    public Mono<List<String>> findAdminEmails(){
+        return userRepository.findAdminEmails(1)
+                .map(String::trim)
+                .collectList();
     }
 }

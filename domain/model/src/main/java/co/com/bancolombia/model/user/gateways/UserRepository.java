@@ -13,4 +13,6 @@ public interface UserRepository {
    Mono<Boolean> existsByEmail(String email);
 
    Mono<User> findByEmail (String email);
+
+   Flux<String> findAdminEmails (Integer rolId);
 }
