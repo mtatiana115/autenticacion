@@ -36,6 +36,11 @@ public class MyReactiveRepositoryAdapter implements UserRepository{
     }
 
     @Override
+    public Flux<String> findAdminEmails(Integer rolId) {
+        return repository.findAdminEmails(rolId);
+    }
+
+    @Override
     public Mono<User> save(User user){
         return repository.save(mapper.toEntity(user))
                 .map(mapper::toModel);

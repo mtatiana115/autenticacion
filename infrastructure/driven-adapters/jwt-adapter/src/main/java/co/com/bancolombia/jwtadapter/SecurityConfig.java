@@ -37,7 +37,9 @@ public class SecurityConfig {
                                 "/api/v1/token",
                                 "/v3/api-docs/swagger-config",
                                 "/api/v1/users/email/*/exists",
-                                "/api/v1/users/email/{email}"
+                                "/api/v1/users/email/{email}",
+                                "/api/v1/admin-emails",
+                                "/actuator/**"
                         ).permitAll()
                         .pathMatchers(
                                 "/api/v1/users"

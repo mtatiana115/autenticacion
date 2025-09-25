@@ -15,6 +15,8 @@ import co.com.bancolombia.api.mapper.UserDTOMapper;
 import co.com.bancolombia.usecase.user.UserUseCase;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -68,18 +70,14 @@ public class UserHandler {
                 .log("FindUserByEmailFlow");
     }
 
-//    public Mono<ServerResponse> findUserByEmail(ServerRequest serverRequest) {
-//        String email = serverRequest.queryParam("email")
-//                .orElseThrow(() -> new IllegalArgumentException("El parámetro 'email' es obligatorio"));
-//
-//        log.info("Finding user by email: {}", email);
-//
-//        return userUseCase.findByEmail(email)
-//                .flatMap(user -> ServerResponse.ok()
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .bodyValue(userDTOMapper.toResponse(user)))
-//                .switchIfEmpty(ServerResponse.notFound().build());
-//    }
-
-
+    public Mono<ServerResponse> findAdminEmails(ServerRequest serverRequest) {
+        return userUseCase.findAdminEmails()
+                .doOnNext(adminEmails -> log.debug("Found admin: {}", adminEmails))
+                .flatMap(adminEmails -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Map.of("adminEmails", adminEmails)))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .doOnError(err -> log.error("Error finding admin by email", err))
+                .log("FindAdminEmails");
+    }
 }

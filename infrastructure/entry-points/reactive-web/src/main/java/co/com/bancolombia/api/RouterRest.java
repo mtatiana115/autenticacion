@@ -91,6 +91,7 @@ public class RouterRest {
                 .POST("/api/v1/users", userHandler::saveUseCase)
                 .GET("/api/v1/users/email/{email}/exists", userHandler::existsUserByEmailUseCase)
                 .GET("/api/v1/users/email/{email}", userHandler::findUserByEmail)
+                .GET("/api/v1/admin-emails", userHandler::findAdminEmails)
                 .build();
     }
 
