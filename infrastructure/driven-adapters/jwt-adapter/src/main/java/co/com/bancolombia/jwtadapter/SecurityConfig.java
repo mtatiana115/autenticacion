@@ -36,14 +36,15 @@ public class SecurityConfig {
                                 "/api/v1/login",
                                 "/api/v1/token",
                                 "/v3/api-docs/swagger-config",
-                                "/api/v1/users/email/*/exists"
+                                "/api/v1/users/email/*/exists",
+                                "/api/v1/users/email/{email}"
                         ).permitAll()
                         .pathMatchers(
                                 "/api/v1/users"
                         ).hasAnyRole("ADMIN","ADVISOR")
-                        .pathMatchers(
-                                HttpMethod.GET,"/api/v1/users/email/{email}"
-                        ).hasAnyRole("ADVISOR", "ADMIN")
+//                        .pathMatchers(
+//                                HttpMethod.GET,"/api/v1/users/email/{email}"
+//                        ).hasAnyRole("ADVISOR", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .securityContextRepository(securityContextRepository)
